@@ -6,7 +6,6 @@ var FPS = 60; // approximate
 var NUM_BIRDS = Math.floor(Math.random() * 10) + 10;
 var VIEWPORT_MARGIN = 100; // (px) border around viewport where birds can move (helps avoid traps)
 var BASE_BIRD_SIZE = 2; // relative to whatever size I happened to draw it at in the SVG
-var SHADOW_OFFSET = new Point(50, 50); // sun from the northwest
 
 var SPEED_DECAY = 0.99; // speed decays 1% per frame...
 var BACKGROUND_SPEED = 1.5; // ...but never below 1.5 px/frame
@@ -33,7 +32,6 @@ var BIRD_COLORS = {
 
 function Bird(
 	path,
-	shadow,
 	size,
 	initial_position,
 	velocity,
@@ -147,11 +145,9 @@ Bird.prototype = {
 
 		// apply transformations
 		this.path.transform(positionInvariantTransfMatrix);
-		if (this.shadow) this.shadow.transform(positionInvariantTransfMatrix);
 
 		// reposition
 		this.path.position = this.pos;
-		if (this.shadow) this.shadow.position = this.pos + SHADOW_OFFSET * this.scale;
 
 		// TODO: maybe shape should take into account forward acceleration as well
 	},
@@ -226,7 +222,6 @@ paper.project.importSVG("plane.svg", function (referenceBird, _) {
 	// randomly sample characteristics
 	for (var i = 0; i < NUM_BIRDS; i++) {
 		var bird = referenceBird.clone();
-		var shadow = new Raster("bird-shadow");
 
 		// relative to the svg
 		var size = random(0.2, 0.7);
@@ -252,7 +247,7 @@ paper.project.importSVG("plane.svg", function (referenceBird, _) {
 		var behavior = BIRD_BEHAVIORS[i];
 
 		birds.push(
-			new Bird(bird, shadow, size, position, velocity, rotAmpl, rotFreq,
+			new Bird(bird, size, position, velocity, rotAmpl, rotFreq,
 				scaleAmpl, scaleFreq, phaseOffset, behavior)
 		);
 	}
