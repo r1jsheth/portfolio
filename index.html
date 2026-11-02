@@ -10,25 +10,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> ➜ raj-portfolio git:(main)</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="tooltip.css">
+    <meta name="description" content="Raj Sheth builds AI systems and early-stage products. Step into a small forest on the internet.">
+    <meta property="og:title" content="Raj Sheth · a small forest on the internet">
+    <meta property="og:description" content="Tech lead building AI systems. Three startups, one first line of code, a lot of birds.">
+    <meta property="og:url" content="https://rajsheth.com">
+    <meta property="og:image" content="https://rajsheth.com/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:creator" content="@r1jsheth">
     <link rel="icon" type="image/png" href="favico.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="stylesheet" href="tooltip.css">
+    <script src="site.js?v=6"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
+    <script type="text/paperscript" src="./magic.js?v=6" canvas="myCanvas"></script>
   </head>
   <body>
-    <img style="display: none;" src="shadow.png" id="bird-shadow" alt="bird-shadow">
-    <canvas id="myCanvas" resize="" style="-webkit-user-drag: none; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);" width="1078" height="1428" data-paper-scope="1"></canvas>
-    <script type="text/paperscript" src="./magic.js" canvas="myCanvas" ></script>
-    <article>
-      <h1>Hi, I’m Raj.</h1>
-      <p> I built
-        payments platform at <a href="https://www.skydo.com">Skydo</a>. I work on
-        <div class="tooltip">all things engineering.
-          <span class="tooltiptext tooltipcontent">
-            Kotlin, Java, Spring Boot, Hibernate, GraphQL, Postgres, AWS, React, Nextjs, React Native, TypeScript, Tailwind, Redux, Zustand
-          </span>
+    <div class="sky" aria-hidden="true"><div class="fireflies"></div></div>
+    <canvas id="myCanvas" resize aria-hidden="true"></canvas>
+
+    <main>
+      <section class="hero">
+        <article class="obstacle">
+          <h1>Hi, I’m Raj.</h1>
+          <p> I lead the team building Ema’s <a href="https://www.ema.ai/ai-recruiter" target="_blank" rel="noopener">AI Recruiter</a>.
+            Before that, built payments platform at <a href="https://www.skydo.com" target="_blank" rel="noopener">Skydo</a>. I work on
+            <span class="tooltip" tabindex="0">all things engineering.
+              <span class="tooltiptext story">
+                <span class="story-row"><b>Before Claude</b>full stack, React, Java, Kotlin, Python and Postgres, too.</span>
+                <span class="story-row"><b>After Claude</b>still full stack, now with a bunch of agents, and more hours with customers.</span>
+                <span class="story-row"><b>Never changed</b>product first. bad UX, slow latency and customer pain all get the same seriousness.</span>
+              </span>
+            </span>
+          </p>
+        </article>
+        <button class="clock mono" type="button" title="click to peek at another time of day">it’s <span id="clock-time">…</span> in Raj’s forest · <span id="clock-mood">the birds are out</span></button>
+        <a class="scroll-hint mono" href="#trail">↓ walk into the forest</a>
+      </section>
+
+      <section id="trail" class="trail">
+        <h2 class="mono section-label">// the trail so far</h2>
+        <svg class="trail-path" aria-hidden="true"><path id="trail-base"/><path id="trail-line" pathLength="1"/></svg>
+        <ol>
+          <li class="stop">
+            <span class="marker"><svg class="perch" viewBox="0 0 24 16"><path d="M2 10c3 0 5-2 7-5 1-2 4-3 6-1l3-1-2 3c0 4-3 7-8 7H4l3-2c-2 0-4 0-5-1z"/></svg></span>
+            <div class="card obstacle">
+              <p class="when mono">2025 → now</p>
+              <h3><a href="https://www.ema.ai" target="_blank" rel="noopener">Ema</a></h3>
+              <p class="role">Tech lead, AI recruiter</p>
+              <p>Built search, evaluation and outreach agents that find the right person out of 160M+ profiles, and leading a team of three to ship them.</p>
+              <details>
+                <summary class="mono">more</summary>
+                <ul>
+                  <li>Built natural language search for candidates: LLMs turn what a recruiter types into a structured Elasticsearch query.</li>
+                  <li>Scaled search across 160M+ profiles (1.6 TB) to answer in seconds.</li>
+                  <li>Shipped LLM scorecards on Temporal. <a href="https://www.ema.ai/customer/artico" target="_blank" rel="noopener">Hiring time dropped 67%</a>, and it runs thousands of evaluations at once.</li>
+                  <li>Built two-way ATS sync (Ashby, Workday, Thrive TRM) behind one interface, for accounts with 40k+ candidates.</li>
+                  <li>First on the team to put Claude Code and agent workflows into production, then helped the whole team ship that way.</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+          <li class="stop">
+            <span class="marker"><svg class="perch" viewBox="0 0 24 16"><path d="M2 10c3 0 5-2 7-5 1-2 4-3 6-1l3-1-2 3c0 4-3 7-8 7H4l3-2c-2 0-4 0-5-1z"/></svg></span>
+            <div class="card obstacle">
+              <p class="when mono">2022 → 2024</p>
+              <h3><a href="https://www.skydo.com" target="_blank" rel="noopener">Skydo</a></h3>
+              <p class="role">Founding engineer, #2</p>
+              <p>Wrote the first line of code. It now moves money for 2000+ businesses.</p>
+              <details>
+                <summary class="mono">more</summary>
+                <ul>
+                  <li>Built the collection rails that carry $120M a year.</li>
+                  <li>Owned 5+ modules: collections, email, video KYC, filters, rewards, settlements.</li>
+                  <li>Got scrappy with early sales, onboarded 10+ customers; one became a top-10 account.</li>
+                  <li>Started the on-call rotation, which halved customer resolution time.</li>
+                  <li>Open-sourced <a href="https://github.com/skydo-tech/hibernate-fsm" target="_blank" rel="noopener">hibernate-fsm</a> and <a href="https://github.com/skydo-tech/dlock" target="_blank" rel="noopener">dlock</a>.</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+          <li class="stop">
+            <span class="marker"><svg class="perch" viewBox="0 0 24 16"><path d="M2 10c3 0 5-2 7-5 1-2 4-3 6-1l3-1-2 3c0 4-3 7-8 7H4l3-2c-2 0-4 0-5-1z"/></svg></span>
+            <div class="card obstacle">
+              <p class="when mono">2021 → 2022</p>
+              <h3><a href="https://flyfin.tax" target="_blank" rel="noopener">FlyFin</a></h3>
+              <p class="role">Engineer #6</p>
+              <p>Payments on Stripe Billing, and an onboarding flow rebuilt as a finite state machine.</p>
+              <details>
+                <summary class="mono">more</summary>
+                <ul>
+                  <li>Built billing on Stripe end to end.</li>
+                  <li>Rebuilt onboarding as a finite state machine with <a href="https://github.com/statelyai/xstate" target="_blank" rel="noopener">XState</a>, which made 10+ quick A/B tests possible.</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+          <li class="stop">
+            <span class="marker"><svg class="perch" viewBox="0 0 24 16"><path d="M2 10c3 0 5-2 7-5 1-2 4-3 6-1l3-1-2 3c0 4-3 7-8 7H4l3-2c-2 0-4 0-5-1z"/></svg></span>
+            <div class="card obstacle">
+              <p class="when mono">2016 → 2020</p>
+              <h3>The trailhead</h3>
+              <p class="role"><a href="https://nirmauni.ac.in" target="_blank" rel="noopener">Nirma University</a> · <a href="https://www.informatica.com" target="_blank" rel="noopener">Informatica</a> · <a href="https://saveo.in" target="_blank" rel="noopener">Saveo</a></p>
+              <p>Competitive programming, two internships, and the habit of shipping.</p>
+              <details>
+                <summary class="mono">more</summary>
+                <ul>
+                  <li>Honorable mention at <a href="https://icpc.global" target="_blank" rel="noopener">ACM-ICPC</a> Kolkata–Kanpur regionals, 2018. Ranked 128 of 3200+ in the online qualifier.</li>
+                  <li><a href="https://www.informatica.com" target="_blank" rel="noopener">Informatica</a>: search UI for the MDM team.</li>
+                  <li><a href="https://saveo.in" target="_blank" rel="noopener">Saveo</a>: backend APIs for a medicine-ordering app.</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- notes shelf: parked until the first note is written. styles live on in styles.css (.notes/.shelf/.note).
+      <section id="notes" class="notes">
+        <h2 class="mono section-label">// notes, still growing</h2>
+        <div class="shelf">
+          <div class="note card obstacle"><span class="mono sprout">🌱 seedling</span><h3>Shipping with agents</h3><p>How a team learned to build with Claude Code.</p></div>
+          <div class="note card obstacle"><span class="mono sprout">🌱 seedling</span><h3>Searching 160M people</h3><p>Elasticsearch, LLMs, and the seconds in between.</p></div>
+          <div class="note card obstacle"><span class="mono sprout">🌱 seedling</span><h3>Engineer, door to door</h3><p>What sales taught a founding engineer.</p></div>
         </div>
-      </p>
-    </article>
+      </section>
+      -->
+
+      <footer class="obstacle">
+        <p class="say-hi">Say hi → <a href="mailto:hi@rajsheth.com">hi@rajsheth.com</a></p>
+        <nav class="socials" aria-label="elsewhere">
+          <a class="social" href="https://github.com/r1jsheth" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+          <a class="social" href="https://www.linkedin.com/in/er-raj-sheth/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a class="social" href="https://x.com/r1jsheth" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a>
+        </nav>
+      </footer>
+    </main>
+
+    <button class="sound mono" type="button" aria-pressed="false" title="forest sounds">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="off" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <span class="sound-label">sound off</span>
+    </button>
+    <div class="toast mono" role="status"></div>
   </body>
 </html>

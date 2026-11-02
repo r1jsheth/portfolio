@@ -3,7 +3,9 @@
  */
 
 var FPS = 60; // approximate
-var NUM_BIRDS = Math.floor(Math.random() * 10) + 10;
+var NUM_BIRDS = Math.floor(Math.random() * 10) + (view.size.width < 600 ? 6 : 10);
+var NIGHT_BIRDS = 4; // the rest are asleep
+var REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var VIEWPORT_MARGIN = 100; // (px) border around viewport where birds can move (helps avoid traps)
 var BASE_BIRD_SIZE = 2; // relative to whatever size I happened to draw it at in the SVG
 
@@ -43,8 +45,9 @@ function Bird(
 	behavior
 ) {
 	this.path = path;
-
-	this.path.scale(size);
+	this.path.applyMatrix = false; // keep the original shape; redraw only sets the matrix
+	this.center = path.bounds.center;
+	this.size = size;
 	this.radius = size * 100; // approx. radius of the bird graphic
 
 	this.pos = initial_position;
@@ -54,8 +57,6 @@ function Bird(
 	this.behavior = behavior;
 
 	this.prevAngle = -90; // graphic starts pointed upwards, which is -90 in the Paper.js coordinate system
-	this.prevWingspan = 1; // no transformations applied
-	this.prevScale = 1; // no transformations applied
 	this.smoothedAngularVelocity = 0; // no initial angular velocity
 
 	this.rotFreq = rotationFrequency;
@@ -73,14 +74,12 @@ Bird.prototype = {
 		this.updateVelocity(time);
 		this.updatePosition();
 		this.updateScale(time);
-		this.updateWingspan();
+		this.updateWingspan(time);
 
 		this.redraw();
 
 		// save values for next time
-		this.prevScale = this.scale;
 		this.prevAngle = this.velocity.angle;
-		this.prevWingspan = this.wingspan;
 	},
 
 	updateVelocity: function (time) {
@@ -111,7 +110,7 @@ Bird.prototype = {
 			this.scaleAmpl * Math.cos(time * 2 * Math.PI * this.scaleFreq + this.phaseOffset);
 	},
 
-	updateWingspan: function () {
+	updateWingspan: function (time) {
 		// inversely proportional to angular velocity. angular velocities are in degrees/second
 		// (based on approx FPS). limit angular velocity because it can get HUGE at t=0 when
 		// we rotate all the birds into initial position
@@ -121,39 +120,33 @@ Bird.prototype = {
 			this.smoothedAngularVelocity * 0.6 +
 			Math.min(momentaryAngularVelocity, MAX_ANGULAR_VELOCITY) * 0.4;
 		this.wingspan = 1.2 - (this.smoothedAngularVelocity / 25) * 0.6;
+
+		// glide, then a burst of wingbeats (seen from above, a flap narrows the wings).
+		// faster birds flap harder: a spooked bird beats like mad
+		var burst = Math.sin(time * 2 * Math.PI * 0.12 + this.phaseOffset) > 0.35 || this.velocity.length > 3;
+		if (burst) this.wingspan *= 0.8 + 0.2 * Math.cos(time * 2 * Math.PI * (3 + this.velocity.length) + this.phaseOffset);
 	},
 
 	redraw: function () {
-		// note that the wingspan transformation is a *vertical* scale relative to
-		// a bird pointing *rightwards*
-		var transfMatrix = new Matrix()
-			// undo transformations from last frame
-			.rotate(-this.prevAngle)
-			.prepend(new Matrix().scale(1, 1 / this.prevWingspan))
-			.prepend(new Matrix().scale(1 / this.prevScale))
-
-			// do transformations for this frame
-			.prepend(new Matrix().scale(this.scale))
-			.prepend(new Matrix().scale(1, this.wingspan))
-			.prepend(new Matrix().rotate(this.velocity.angle));
-
-		// to apply the transformations correctly, we have to put the graphic at the origin
-		var positionInvariantTransfMatrix = new Matrix()
-			.translate(-this.pos)
-			.prepend(transfMatrix)
-			.prepend(new Matrix().translate(this.pos));
-
-		// apply transformations
-		this.path.transform(positionInvariantTransfMatrix);
-
-		// reposition
-		this.path.position = this.pos;
-
-		// TODO: maybe shape should take into account forward acceleration as well
+		// rebuild the whole transform every frame from the untouched graphic. (transforming the
+		// path in place, undo-then-redo, piles up float error until the birds warp.)
+		// graphic points up (-90deg); a flap narrows the wings, i.e. scales local x.
+		this.path.matrix = new Matrix()
+			.translate(this.pos)
+			.rotate(this.velocity.angle + 90)
+			.scale(this.size * this.scale * this.wingspan, this.size * this.scale)
+			.translate(-this.center);
 	},
 
 	observeCreature: function (creature) {
 		var dist = this.pos.getDistance(creature);
+
+		if (window.forest.flock) {
+			var toward = creature - this.pos;
+			this.velocity.angle = weightedMeanAngle(this.velocity.angle, toward.angle, dist > 60 ? 0.92 : 0.98);
+			this.velocity.length = Math.min(Math.max(this.velocity.length, 2.5), 6);
+			return;
+		}
 
 		if (dist < this.radius * CREATURE_OBSERVATION_RANGE) {
 			// creature (i.e., the cursor) spotted!
@@ -196,10 +189,15 @@ Bird.prototype = {
 	},
 
 	observeObstacle: function (obstacle) {
-		var nearestPoint = obstacle.getNearestPoint(this.pos);
+		var inside = this.pos.x > obstacle.left && this.pos.x < obstacle.right &&
+			this.pos.y > obstacle.top && this.pos.y < obstacle.bottom;
+		var nearestPoint = new Point(
+			Math.min(Math.max(this.pos.x, obstacle.left), obstacle.right),
+			Math.min(Math.max(this.pos.y, obstacle.top), obstacle.bottom)
+		);
 		var dist = this.pos.getDistance(nearestPoint);
 
-		if (obstacle.contains(this.pos)) {
+		if (inside) {
 			// bird is trapped! (this can happen on resize.) fly outta there absurdly fast
 			this.velocity.length = ESCAPE_SPEED;
 		} else if (dist < this.radius * OBSTACLE_OBSERVATION_RANGE) {
@@ -216,7 +214,7 @@ Bird.prototype = {
 
 var birds = [];
 
-paper.project.importSVG("plane.svg", function (referenceBird, _) {
+paper.project.importSVG("bird.svg?v=3", function (referenceBird, _) {
 	referenceBird.position = [-100, -100]; // off-screen
 
 	// randomly sample characteristics
@@ -230,7 +228,7 @@ paper.project.importSVG("plane.svg", function (referenceBird, _) {
 		var position;
 		do {
 			position = Point.random() * view.size;
-		} while (textBox.contains(position));
+		} while (insideAny(position));
 
 		var velocity = new Point({
 			angle: 360 * Math.random(),
@@ -255,38 +253,59 @@ paper.project.importSVG("plane.svg", function (referenceBird, _) {
 
 
 var cursorPosition = null;
-var textBox = null;
+var obstacles = [];
+var lastLook = "";
 
-function onMouseEnter(e) {
-	cursorPosition = e.point;
-}
-
-function onMouseMove(e) {
-	cursorPosition = e.point;
-}
-
-function onResize(e) {
-	updateTextBox();
-}
-
-function onLoad() {
-	updateTextBox();
-}
+// canvas is fixed + click-through, so watch the pointer on the window
+window.addEventListener("pointermove", function (e) {
+	cursorPosition = new Point(e.clientX, e.clientY);
+});
+document.documentElement.addEventListener("pointerleave", function () {
+	cursorPosition = null;
+});
 
 function onFrame(e) {
+	if (REDUCED_MOTION && e.count > 0) return; // draw once, then stay still
+	updateObstacles();
+	var night = window.forest.phase === "night";
+	updateLook(night);
 	for (var i = 0; i < birds.length; i++) {
+		if (night && i >= NIGHT_BIRDS && !window.forest.flock) continue;
 		birds[i].iterate(e.time);
 		if (cursorPosition) birds[i].observeCreature(cursorPosition);
-		if (textBox) birds[i].observeObstacle(textBox);
+		for (var j = 0; j < obstacles.length; j++) birds[i].observeObstacle(obstacles[j]);
 	}
 }
 
-function updateTextBox() {
-	var articleBox = document.querySelector("article").getBoundingClientRect();
-	textBox = Path.Rectangle(
-		new Point(articleBox.left, articleBox.top),
-		new Point(articleBox.right, articleBox.bottom)
-	);
+// every text block on screen is an obstacle; ponytail: rescans DOM each frame, fine for ~10 elements
+function updateObstacles() {
+	obstacles = [];
+	var els = document.querySelectorAll(".obstacle");
+	for (var i = 0; i < els.length; i++) {
+		var r = els[i].getBoundingClientRect();
+		if (r.bottom > 0 && r.top < view.size.height) obstacles.push(r);
+	}
+}
+
+function insideAny(p) {
+	for (var i = 0; i < obstacles.length; i++) {
+		var r = obstacles[i];
+		if (p.x > r.left && p.x < r.right && p.y > r.top && p.y < r.bottom) return true;
+	}
+	return false;
+}
+
+// recolor only when mood or flock changes
+function updateLook(night) {
+	var look = window.forest.phase + window.forest.flock;
+	if (look === lastLook) return;
+	lastLook = look;
+	for (var i = 0; i < birds.length; i++) {
+		var asleep = night && i >= NIGHT_BIRDS && !window.forest.flock;
+		birds[i].path.visible = !asleep;
+		birds[i].path.opacity = night ? 0.55 : 1;
+		recursiveColor(birds[i].path, window.forest.flock ? "#eabd6b" : BIRD_COLORS[birds[i].behavior]);
+	}
 }
 
 

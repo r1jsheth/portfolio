@@ -1,0 +1,4 @@
+<!-- a gull seen from above: long thin bent wings, short body, beak pointing up (magic.js expects that) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="-25 -25 150 150">
+<path fill="#ffb3b3" d="M50 30C52 30 53.5 32 53.5 35C60 33 72 32 84 36C90 38 95 42 99 47C92 46 84 46 76 47C68 48 60 50 54 52C54 58 55 63 57 68L50 66L43 68C45 63 46 58 46 52C40 50 32 48 24 47C16 46 8 46 1 47C5 42 10 38 16 36C28 32 40 33 46.5 35C46.5 32 48 30 50 30Z"/>
+</svg>
