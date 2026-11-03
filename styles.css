@@ -379,3 +379,79 @@ footer {
   .perch, main a::before { transition: none; }
   main a::after { animation: none !important; }
 }
+
+/* ---------- clock: long on desktop, compact on phones ---------- */
+.clock-short { display: none; }
+
+/* ---------- story card as a bottom sheet (phones) ---------- */
+.sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem 1.5rem calc(2rem + env(safe-area-inset-bottom));
+  border: 0;
+  border-top: 1px solid rgba(234, 189, 107, 0.5);
+  border-radius: 20px 20px 0 0;
+  background: rgba(14, 24, 16, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  transition: transform 0.2s;
+}
+.sheet[open] { animation: sheet-up 0.35s cubic-bezier(.2, .8, .3, 1); }
+.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
+.sheet-grip { width: 42px; height: 5px; margin: 0 auto 1.1rem; border-radius: 3px; background: rgba(255, 255, 255, 0.3); }
+.sheet .story-row { opacity: 1; transform: none; animation: row-in 0.45s both; }
+.sheet .story-row:nth-child(2) { animation-delay: 0.12s; }
+.sheet .story-row:nth-child(3) { animation-delay: 0.24s; }
+@keyframes sheet-up { from { transform: translateY(100%); } }
+@keyframes row-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- phones / touch: no hover, so make the hidden things visible ---------- */
+@media (hover: none) {
+  .tooltip .story { display: none; } /* the bottom sheet takes over */
+  .card h3 a[href^="http"]::after { opacity: 0.55; } /* inline arrows would crowd the text; headings only */
+  main a:not(.social):active::before { opacity: 1; transform: none; transition-duration: 0.15s; }
+  main a.takeoff::before { animation: takeoff 0.8s ease-in forwards; }
+}
+@keyframes takeoff {
+  0% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translate(-34px, -56px) rotate(25deg) scaleX(-1); }
+}
+
+@media only screen and (max-width: 55em) {
+  /* hero sits at the bottom like a story, over a soft shade; the sky above is for the birds */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 40% 0 0 0;
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
+    pointer-events: none;
+  }
+  .hero article { top: auto; bottom: 4.5rem; }
+  .clock { right: 4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .clock { font-size: 0.72rem; }
+  .clock-long, .clock .peek, .clock .the { display: none; }
+  .clock-short { display: inline; }
+
+  /* sound: a small round icon in the top corner, out of the way of the cards */
+  .sound {
+    top: 0.9rem;
+    bottom: auto;
+    right: 0.9rem;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .sound-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open], .sheet .story-row, main a.takeoff::before { animation: none; }
+}

@@ -21,11 +21,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=7">
+    <link rel="stylesheet" href="styles.css?v=9">
     <link rel="stylesheet" href="tooltip.css">
-    <script src="site.js?v=7"></script>
+    <script src="site.js?v=9"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
-    <script type="text/paperscript" src="./magic.js?v=7" canvas="myCanvas"></script>
+    <script type="text/paperscript" src="./magic.js?v=9" canvas="myCanvas"></script>
   </head>
   <body>
     <div class="sky" aria-hidden="true"><div class="fireflies"></div></div>
@@ -46,7 +46,7 @@
             </span>
           </p>
         </article>
-        <button class="clock mono" type="button" title="click to peek at another time of day">it’s <span id="clock-time">…</span> in Raj’s forest · <span id="clock-mood">the birds are out</span></button>
+        <button class="clock mono" type="button" title="click to peek at another time of day">it’s <span id="clock-time">…</span> <span class="clock-long">in Raj’s forest</span><span class="clock-short">IST</span> · <span id="clock-mood">the birds are out</span></button>
         <a class="scroll-hint mono" href="#trail">↓ walk into the forest</a>
       </section>
 
@@ -154,5 +154,7 @@
       <span class="sound-label">sound off</span>
     </button>
     <div class="toast mono" role="status"></div>
+    <!-- phones: the story card opens as a bottom sheet (filled from .story by site.js) -->
+    <dialog class="sheet" aria-label="all things engineering"><div class="sheet-grip" aria-hidden="true"></div><div class="sheet-body"></div></dialog>
   </body>
 </html>

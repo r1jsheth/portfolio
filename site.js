@@ -34,11 +34,11 @@ function tickClock() {
 	var time = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit" }).toLowerCase().replace(" ", "");
 	document.getElementById("clock-time").textContent = time;
 	if (forest.peek) {
-		document.getElementById("clock-mood").textContent = "peeking at " + forest.peek + " · " + MOODS[forest.peek];
+		showMood(forest.peek, true);
 		return;
 	}
 	setPhase(phaseAt(istHour()));
-	document.getElementById("clock-mood").textContent = MOODS[forest.phase];
+	showMood(forest.phase, false);
 }
 
 // click the clock to peek at the next time of day; a full lap returns to Raj's real time
@@ -47,7 +47,56 @@ function peek() {
 	var next = PHASES[(PHASES.indexOf(forest.phase) + 1) % 4];
 	forest.peek = next === real ? null : next;
 	setPhase(next);
-	document.getElementById("clock-mood").textContent = forest.peek ? "peeking at " + next + " · " + MOODS[next] : MOODS[next];
+	showMood(next, !!forest.peek);
+}
+
+// "peeking at night · " is hidden on phones to keep the clock on one line
+function showMood(phase, peeking) {
+	document.getElementById("clock-mood").innerHTML =
+		(peeking ? '<span class="peek">peeking at ' + phase + " · </span>" : "") + MOODS[phase].replace("the ", '<span class="the">the </span>');
+}
+
+// ---------- phones: no hover, so the story card becomes a bottom sheet ----------
+var NO_HOVER = matchMedia("(hover: none)");
+
+function setupSheet() {
+	var sheet = document.querySelector(".sheet");
+	var tip = document.querySelector(".tooltip");
+	tip.addEventListener("click", function (e) {
+		if (!NO_HOVER.matches) return;
+		e.preventDefault();
+		sheet.querySelector(".sheet-body").innerHTML = tip.querySelector(".story").innerHTML;
+		sheet.showModal();
+		tip.blur();
+	});
+	sheet.addEventListener("click", function (e) { if (e.target === sheet) sheet.close(); }); // tap the backdrop
+	// swipe down to dismiss
+	var y0 = null;
+	sheet.addEventListener("touchstart", function (e) { y0 = e.touches[0].clientY; }, { passive: true });
+	sheet.addEventListener("touchmove", function (e) {
+		var dy = e.touches[0].clientY - y0;
+		if (y0 !== null && dy > 0) sheet.style.transform = "translateY(" + dy + "px)";
+	}, { passive: true });
+	sheet.addEventListener("touchend", function (e) {
+		var dy = e.changedTouches[0].clientY - y0;
+		sheet.style.transform = "";
+		y0 = null;
+		if (dy > 70) sheet.close();
+	});
+}
+
+// phones: the perched bird takes off from a link as you tap it
+function setupTakeoff() {
+	document.addEventListener("touchstart", function () {}, { passive: true }); // lets iOS show :active
+	document.querySelectorAll("main a:not(.social)").forEach(function (a) {
+		a.addEventListener("click", function () {
+			if (!NO_HOVER.matches) return;
+			a.classList.remove("takeoff");
+			void a.offsetWidth; // restart the animation
+			a.classList.add("takeoff");
+			setTimeout(function () { a.classList.remove("takeoff"); }, 900);
+		});
+	});
 }
 
 function makeFireflies() {
@@ -191,6 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	tickClock();
 	setInterval(tickClock, 30000);
 	makeFireflies();
+	setupSheet();
+	setupTakeoff();
 	layoutTrail();
 	document.querySelector(".clock").addEventListener("click", peek);
 	document.querySelector(".sound").addEventListener("click", function (e) { toggleSound(e.currentTarget); });
