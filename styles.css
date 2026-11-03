@@ -413,7 +413,6 @@ footer {
 
 /* ---------- phones / touch: no hover, so make the hidden things visible ---------- */
 @media (hover: none) {
-  .tooltip .story { display: none; } /* the bottom sheet takes over */
   .card h3 a[href^="http"]::after { opacity: 0.55; } /* inline arrows would crowd the text; headings only */
   main a:not(.social):active::before { opacity: 1; transform: none; transition-duration: 0.15s; }
   main a.takeoff::before { animation: takeoff 0.8s ease-in forwards; }

@@ -63,6 +63,12 @@
   .tooltip .story { bottom: auto; top: calc(100% + 10px); left: -1rem; }
 }
 
+/* phones: the bottom sheet (site.js) shows the story instead. lives here, not in styles.css,
+   because this file loads later and its display: block would win */
+@media (hover: none) {
+  .tooltip .story { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tooltip .story, .story-row { transition: none; transform: none; }
 }
